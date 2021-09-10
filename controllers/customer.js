@@ -6,9 +6,10 @@ const bcrypt=require('bcryptjs');
 module.exports.authorize = async(req, res, next) => {
     try {
       const token = req.headers.authorization.split(" ")[1];     
-        decodedData = jwt.verify(token, process.env.JWT);
-    
-        req.user = decodedData?.id;
+      const decodedData = jwt.verify(token, process.env.JWT);
+      let _user=await User.findOne({_id:decodedData.id,type:decodedData.type});
+      if(!_user) return res.status(401).json({message:'unauthorized'});
+      req.user = decodedData?.id;
  
     
       next();
